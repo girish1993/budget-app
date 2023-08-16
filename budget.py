@@ -42,15 +42,14 @@ class Category:
         return True
 
     def transfer(self, amount, category):
-        # destination_category_instance = Category.get_category_instance(category)
         if self.check_funds(amount=amount):
-            self.withdraw(amount=amount, description=f"Transfer to {category}")
-            category.deposit(amount=amount, description=f"Transfer from {category.get_category()}")
+            self.withdraw(amount=amount, description=f"Transfer to {category.get_category()}")
+            category.deposit(amount=amount, description=f"Transfer from {self.get_category()}")
             return True
         return False
 
     def __str__(self):
-        shopping_lst = [f"{each_item['description'][:23]:<{23}} {each_item['amount']:>{7}}" for each_item in
+        shopping_lst = [f"{each_item['description'][:23]:<{23}} {each_item['amount']:>7.2f}" for each_item in
                         self.get_ledger()]
         shopping_lst.append(f"Total: {self.get_balance()}")
         formatted_spending_lst = "\n".join(shopping_lst)
