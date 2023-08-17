@@ -29,7 +29,9 @@ class Category:
 
     def withdraw(self, amount, description=""):
         if self.check_funds(amount=amount):
-            self.add_item_to_ledger({"amount": -abs(amount), "description": description})
+            self.add_item_to_ledger(
+                {"amount": -abs(amount), "description": description}
+            )
             return True
         return False
 
@@ -43,25 +45,42 @@ class Category:
 
     def transfer(self, amount, category):
         if self.check_funds(amount=amount):
-            self.withdraw(amount=amount, description=f"Transfer to {category.get_category()}")
-            category.deposit(amount=amount, description=f"Transfer from {self.get_category()}")
+            self.withdraw(
+                amount=amount, description=f"Transfer to {category.get_category()}"
+            )
+            category.deposit(
+                amount=amount, description=f"Transfer from {self.get_category()}"
+            )
             return True
         return False
 
     def __str__(self):
-        shopping_lst = [f"{each_item['description'][:23]:<{23}}{each_item['amount']:>7.2f}" for each_item in
-                        self.get_ledger()]
+        shopping_lst = [
+            f"{each_item['description'][:23]:<{23}}{each_item['amount']:>7.2f}"
+            for each_item in self.get_ledger()
+        ]
         shopping_lst.append(f"Total: {self.get_balance()}")
         formatted_spending_lst = "\n".join(shopping_lst)
         return f"{self.get_category().center(30, '*')}\n{formatted_spending_lst}"
 
 
 def create_spend_chart(categories):
+    bar_chart = ""
+
     def filter_withdraw_only(ledger_entries):
         return abs(sum([x["amount"] if x["amount"] < 0 else 0 for x in ledger_entries]))
-    spend_in_category = [(category.get_category(), filter_withdraw_only(category.get_ledger())) for category in categories]
+
+    spend_in_category = [
+        (category.get_category(), filter_withdraw_only(category.get_ledger()))
+        for category in categories
+    ]
     total_spend = sum([each[1] for each in spend_in_category])
-    spend_percent_category = [{spend[0]: int(round((spend[1]/total_spend)*100, -1))} for spend in spend_in_category]
+    spend_percent_category = [
+        {spend[0]: "o" * int(int(round((spend[1] / total_spend) * 100, -1)) / 10)}
+        for spend in spend_in_category
+    ]
     print(spend_percent_category)
-
-
+    percent_ranges = "\n".join(
+        list(map(lambda x: f"{x:>3}|", list(range(100, -10, -10))))
+    )
+    chart_txt = "Percentage spent by category"
