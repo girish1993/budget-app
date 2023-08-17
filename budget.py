@@ -12,17 +12,17 @@ class Category:
 
     def __init__(self, category):
         self._category = category
-        self._ledger = []
+        self.ledger = []
         Category.update_instance_log(category, self)
 
     def get_category(self):
         return self._category
 
     def get_ledger(self):
-        return self._ledger
+        return self.ledger
 
     def add_item_to_ledger(self, item):
-        self._ledger.append(item)
+        self.ledger.append(item)
 
     def deposit(self, amount, description=""):
         self.add_item_to_ledger(item={"amount": amount, "description": description})
@@ -49,7 +49,7 @@ class Category:
         return False
 
     def __str__(self):
-        shopping_lst = [f"{each_item['description'][:23]:<{23}} {each_item['amount']:>7.2f}" for each_item in
+        shopping_lst = [f"{each_item['description'][:23]:<{23}}{each_item['amount']:>7.2f}" for each_item in
                         self.get_ledger()]
         shopping_lst.append(f"Total: {self.get_balance()}")
         formatted_spending_lst = "\n".join(shopping_lst)
@@ -57,4 +57,11 @@ class Category:
 
 
 def create_spend_chart(categories):
-    pass
+    def filter_withdraw_only(ledger_entries):
+        return abs(sum([x["amount"] if x["amount"] < 0 else 0 for x in ledger_entries]))
+    spend_in_category = [(category.get_category(), filter_withdraw_only(category.get_ledger())) for category in categories]
+    total_spend = sum([each[1] for each in spend_in_category])
+    spend_percent_category = [{spend[0]: int(round((spend[1]/total_spend)*100, -1))} for spend in spend_in_category]
+    print(spend_percent_category)
+
+
