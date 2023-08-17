@@ -1,3 +1,6 @@
+from itertools import zip_longest
+
+
 class Category:
     _instance_log = {}
 
@@ -79,8 +82,21 @@ def create_spend_chart(categories):
         {spend[0]: "o" * int(int(round((spend[1] / total_spend) * 100, -1)) / 10)}
         for spend in spend_in_category
     ]
-    print(spend_percent_category)
+
     percent_ranges = "\n".join(
         list(map(lambda x: f"{x:>3}|", list(range(100, -10, -10))))
     )
-    chart_txt = "Percentage spent by category"
+    chart_txt = "Percentage spent by category\n"
+
+    ex_str = []
+    ex_str.append(percent_ranges)
+    for each in spend_percent_category:
+        val = list(each.values())[0]
+        ex_str.append("\n" * (11 - len(val)) + "\n".join(val))
+    split_lines = [each_line_str.split("\n") for each_line_str in ex_str]
+    arranged_problems = "\n".join(
+        " ".join(line) for line in zip_longest(*split_lines, fillvalue="")
+    )
+
+    bar_chart = chart_txt + arranged_problems
+    print(bar_chart)
