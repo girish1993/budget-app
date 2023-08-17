@@ -98,5 +98,8 @@ def create_spend_chart(categories):
         " ".join(line) for line in zip_longest(*split_lines, fillvalue="")
     )
 
-    bar_chart = chart_txt + arranged_problems
+    hor_bar = " " * 4 + f"{((len(spend_percent_category)*2)+2)*'-'}"
+
+    # shifted_bar = f"{hor_bar:>10}"
+    bar_chart = chart_txt + arranged_problems + "\n" + hor_bar
     print(bar_chart)
