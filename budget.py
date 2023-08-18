@@ -76,6 +76,7 @@ def create_spend_chart(categories):
 
     def vertical_concat(ex_str):
         split_lines = [each_line_str.split("\n") for each_line_str in ex_str]
+        split_lines = [[x or ' ' for x in split_line] for split_line in split_lines]
         result = "\n".join(
            "  ".join(line) for line in zip_longest(*split_lines, fillvalue=" ")
         )
@@ -98,11 +99,11 @@ def create_spend_chart(categories):
     ex_str = [percent_ranges]
     for each in spend_percent_category:
         val = list(each.values())[0]
-        ex_str.append("\n " * (11 - len(val)) + "\n".join(val))
+        ex_str.append("\n" * (11 - len(val)) + "\n".join(val))
     arranged_problems = vertical_concat(ex_str)
 
-    hor_bar = " " * 4 + f"{((len(spend_percent_category) * 2) + 2) * '-'}"
+    hor_bar = " " * 5 + f"{((len(spend_percent_category) * 2) + 4) * '-'}"
     category_names = vertical_concat(["\n".join(str(list(each_category.keys())[0])) for each_category in spend_percent_category])
-    bar_chart = chart_txt + arranged_problems + "\n" + hor_bar + "\n" + "\n".join([f"{' '*5+each}"for each in category_names.split("\n")])
+    bar_chart = chart_txt + arranged_problems + "\n" + hor_bar + "\n" + "\n".join([f"{' '*6+each}"for each in category_names.split("\n")])
     return bar_chart
 
