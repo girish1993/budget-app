@@ -69,9 +69,17 @@ class Category:
 
 def create_spend_chart(categories):
     bar_chart = ""
+    chart_txt = "Percentage spent by category\n"
 
     def filter_withdraw_only(ledger_entries):
         return abs(sum([x["amount"] if x["amount"] < 0 else 0 for x in ledger_entries]))
+
+    def vertical_concat(ex_str):
+        split_lines = [each_line_str.split("\n") for each_line_str in ex_str]
+        result = "\n".join(
+           "  ".join(line) for line in zip_longest(*split_lines, fillvalue=" ")
+        )
+        return result
 
     spend_in_category = [
         (category.get_category(), filter_withdraw_only(category.get_ledger()))
@@ -86,20 +94,15 @@ def create_spend_chart(categories):
     percent_ranges = "\n".join(
         list(map(lambda x: f"{x:>3}|", list(range(100, -10, -10))))
     )
-    chart_txt = "Percentage spent by category\n"
 
-    ex_str = []
-    ex_str.append(percent_ranges)
+    ex_str = [percent_ranges]
     for each in spend_percent_category:
         val = list(each.values())[0]
-        ex_str.append("\n" * (11 - len(val)) + "\n".join(val))
-    split_lines = [each_line_str.split("\n") for each_line_str in ex_str]
-    arranged_problems = "\n".join(
-        " ".join(line) for line in zip_longest(*split_lines, fillvalue="")
-    )
+        ex_str.append("\n " * (11 - len(val)) + "\n".join(val))
+    arranged_problems = vertical_concat(ex_str)
 
-    hor_bar = " " * 4 + f"{((len(spend_percent_category)*2)+2)*'-'}"
+    hor_bar = " " * 4 + f"{((len(spend_percent_category) * 2) + 2) * '-'}"
+    category_names = vertical_concat(["\n".join(str(list(each_category.keys())[0])) for each_category in spend_percent_category])
+    bar_chart = chart_txt + arranged_problems + "\n" + hor_bar + "\n" + "\n".join([f"{' '*5+each}"for each in category_names.split("\n")])
+    return bar_chart
 
-    # shifted_bar = f"{hor_bar:>10}"
-    bar_chart = chart_txt + arranged_problems + "\n" + hor_bar
-    print(bar_chart)
